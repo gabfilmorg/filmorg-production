@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Agenda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Agenda</h1>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openNewEventModal()">
+                    <i class="ri-add-line"></i>
+                    Novo Evento
+                </button>
+            </div>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="btn btn-outline" onclick="previousMonth()">
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+                <h2 id="currentMonth">Março 2024</h2>
+                <button class="btn btn-outline" onclick="nextMonth()">
+                    <i class="ri-arrow-right-s-line"></i>
+                </button>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="calendar-weekdays">
+                    <div>Dom</div>
+                    <div>Seg</div>
+                    <div>Ter</div>
+                    <div>Qua</div>
+                    <div>Qui</div>
+                    <div>Sex</div>
+                    <div>Sáb</div>
+                </div>
+                <div class="calendar-days" id="calendarDays">
+                    <!-- Dias do calendário serão inseridos aqui via JavaScript -->
+                </div>
+            </div>
+
+            <div class="events-list">
+                <h3>Eventos do Dia</h3>
+                <div id="dayEvents">
+                    <!-- Eventos do dia selecionado serão inseridos aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Novo Evento -->
+    <div class="modal" id="newEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Evento</h2>
+                <button class="modal-close" onclick="closeNewEventModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newEventForm">
+                    <div class="form-group">
+                        <label for="eventTitle">Título</label>
+                        <input type="text" id="eventTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventProject">Projeto</label>
+                        <select id="eventProject" required>
+                            <option value="">Selecione um projeto</option>
+                            <option value="1">Documentário - Vida na Cidade</option>
+                            <option value="2">Curta - O Encontro</option>
+                            <option value="3">Comercial - Tech Solutions</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventType">Tipo</label>
+                        <select id="eventType" required>
+                            <option value="">Selecione um tipo</option>
+                            <option value="shooting">Filmagem</option>
+                            <option value="meeting">Reunião</option>
+                            <option value="editing">Edição</option>
+                            <option value="deadline">Deadline</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">Data</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Horário</label>
+                        <input type="time" id="eventTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDuration">Duração (horas)</label>
+                        <input type="number" id="eventDuration" min="0.5" step="0.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Descrição</label>
+                        <textarea id="eventDescription" rows="3"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeNewEventModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Criar Evento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados de eventos
+        const events = [
+            {
+                id: 1,
+                title: 'Filmagem Externa',
+                project: 'Documentário - Vida na Cidade',
+                type: 'shooting',
+                date: '2024-03-15',
+                time: '08:00',
+                duration: 6,
+                description: 'Filmagem das cenas externas no centro da cidade.'
+            },
+            {
+                id: 2,
+                title: 'Reunião de Produção',
+                project: 'Curta - O Encontro',
+                type: 'meeting',
+                date: '2024-03-15',
+                time: '14:00',
+                duration: 2,
+                description: 'Reunião com equipe para discutir cronograma.'
+            },
+            {
+                id: 3,
+                title: 'Edição Final',
+                project: 'Comercial - Tech Solutions',
+                type: 'editing',
+                date: '2024-03-16',
+                time: '10:00',
+                duration: 4,
+                description: 'Finalização da edição do comercial.'
+            }
+        ];
+
+        // Funções do calendário
+        let currentDate = new Date();
+
+        function generateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+
+            document.getElementById('currentMonth').textContent = 
+                new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(currentDate);
+
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+
+            // Dias vazios no início do mês
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarDays.appendChild(emptyDay);
+            }
+
+            // Dias do mês
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.innerHTML = `
+                    <span class="day-number">${day}</span>
+                    <div class="day-events"></div>
+                `;
+
+                const currentDateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEvents = events.filter(event => event.date === currentDateString);
+
+                if (dayEvents.length > 0) {
+                    dayElement.classList.add('has-events');
+                    const eventsIndicator = document.createElement('div');
+                    eventsIndicator.className = 'events-indicator';
+                    eventsIndicator.textContent = dayEvents.length;
+                    dayElement.appendChild(eventsIndicator);
+                }
+
+                dayElement.addEventListener('click', () => showDayEvents(currentDateString));
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        function showDayEvents(date) {
+            const dayEvents = events.filter(event => event.date === date);
+            const eventsContainer = document.getElementById('dayEvents');
+            eventsContainer.innerHTML = '';
+
+            if (dayEvents.length === 0) {
+                eventsContainer.innerHTML = '<p class="no-events">Nenhum evento neste dia</p>';
+                return;
+            }
+
+            dayEvents.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = `event-item type-${event.type}`;
+                eventElement.innerHTML = `
+                    <div class="event-time">${event.time}</div>
+                    <div class="event-info">
+                        <div class="event-title">${event.title}</div>
+                        <div class="event-project">${event.project}</div>
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn-icon" onclick="editEvent(${event.id})">
+                            <i class="ri-edit-line"></i>
+                        </button>
+                        <button class="btn-icon" onclick="deleteEvent(${event.id})">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                `;
+                eventsContainer.appendChild(eventElement);
+            });
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        }
+
+        // Funções para o modal
+        function openNewEventModal() {
+            document.getElementById('newEventModal').classList.add('show');
+        }
+
+        function closeNewEventModal() {
+            document.getElementById('newEventModal').classList.remove('show');
+        }
+
+        // Função para salvar novo evento
+        document.getElementById('newEventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Aqui você implementaria a lógica para salvar o novo evento
+            closeNewEventModal();
+        });
+
+        // Funções para editar e excluir eventos
+        function editEvent(id) {
+            // Implementar edição do evento
+            console.log('Editando evento:', id);
+        }
+
+        function deleteEvent(id) {
+            // Implementar exclusão do evento
+            console.log('Excluindo evento:', id);
+        }
+
+        // Inicializar calendário quando a página carregar
+        document.addEventListener('DOMContentLoaded', generateCalendar);
+    </script>
+</body>
+</html>

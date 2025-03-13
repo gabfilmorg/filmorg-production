@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Orçamento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Orçamento</h1>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-outline" onclick="exportBudget()">
+                    <i class="ri-download-line"></i>
+                    Exportar
+                </button>
+                <button class="btn btn-primary" onclick="openNewExpenseModal()">
+                    <i class="ri-add-line"></i>
+                    Nova Despesa
+                </button>
+            </div>
+        </div>
+
+        <div class="budget-overview">
+            <div class="budget-cards">
+                <div class="budget-card total">
+                    <div class="budget-card-header">
+                        <h3>Orçamento Total</h3>
+                        <i class="ri-money-dollar-circle-line"></i>
+                    </div>
+                    <div class="budget-value">R$ 150.000</div>
+                    <div class="budget-period">2024</div>
+                </div>
+                <div class="budget-card spent">
+                    <div class="budget-card-header">
+                        <h3>Total Gasto</h3>
+                        <i class="ri-shopping-cart-line"></i>
+                    </div>
+                    <div class="budget-value">R$ 85.000</div>
+                    <div class="budget-progress">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 56.67%"></div>
+                        </div>
+                        <span>56.67%</span>
+                    </div>
+                </div>
+                <div class="budget-card remaining">
+                    <div class="budget-card-header">
+                        <h3>Saldo Restante</h3>
+                        <i class="ri-wallet-3-line"></i>
+                    </div>
+                    <div class="budget-value">R$ 65.000</div>
+                    <div class="budget-period">Disponível</div>
+                </div>
+            </div>
+
+            <div class="budget-charts">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Gastos por Categoria</h3>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Gastos por Projeto</h3>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="projectChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expenses-list">
+                <div class="expenses-header">
+                    <h3>Últimas Despesas</h3>
+                    <div class="expenses-filters">
+                        <select id="projectFilter">
+                            <option value="">Todos os Projetos</option>
+                            <option value="1">Documentário - Vida na Cidade</option>
+                            <option value="2">Curta - O Encontro</option>
+                            <option value="3">Comercial - Tech Solutions</option>
+                        </select>
+                        <select id="categoryFilter">
+                            <option value="">Todas as Categorias</option>
+                            <option value="equipment">Equipamentos</option>
+                            <option value="personnel">Pessoal</option>
+                            <option value="location">Locação</option>
+                            <option value="postproduction">Pós-produção</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="expenses-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Projeto</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTableBody">
+                        <!-- Despesas serão inseridas aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nova Despesa -->
+    <div class="modal" id="newExpenseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nova Despesa</h2>
+                <button class="modal-close" onclick="closeNewExpenseModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newExpenseForm">
+                    <div class="form-group">
+                        <label for="expenseDescription">Descrição</label>
+                        <input type="text" id="expenseDescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseProject">Projeto</label>
+                        <select id="expenseProject" required>
+                            <option value="">Selecione um projeto</option>
+                            <option value="1">Documentário - Vida na Cidade</option>
+                            <option value="2">Curta - O Encontro</option>
+                            <option value="3">Comercial - Tech Solutions</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseCategory">Categoria</label>
+                        <select id="expenseCategory" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="equipment">Equipamentos</option>
+                            <option value="personnel">Pessoal</option>
+                            <option value="location">Locação</option>
+                            <option value="postproduction">Pós-produção</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseAmount">Valor</label>
+                        <input type="number" id="expenseAmount" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseDate">Data</label>
+                        <input type="date" id="expenseDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseNotes">Observações</label>
+                        <textarea id="expenseNotes" rows="3"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeNewExpenseModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Despesa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados de despesas
+        const expenses = [
+            {
+                id: 1,
+                date: '2024-03-10',
+                description: 'Aluguel de Câmera Sony FX6',
+                project: 'Documentário - Vida na Cidade',
+                category: 'equipment',
+                amount: 2500.00
+            },
+            {
+                id: 2,
+                date: '2024-03-11',
+                description: 'Diária Equipe de Filmagem',
+                project: 'Curta - O Encontro',
+                category: 'personnel',
+                amount: 3800.00
+            },
+            {
+                id: 3,
+                date: '2024-03-12',
+                description: 'Locação Estúdio',
+                project: 'Comercial - Tech Solutions',
+                category: 'location',
+                amount: 1500.00
+            }
+        ];
+
+        // Função para carregar despesas
+        function loadExpenses() {
+            const tbody = document.getElementById('expensesTableBody');
+            tbody.innerHTML = '';
+
+            expenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(expense.date).toLocaleDateString()}</td>
+                    <td>${expense.description}</td>
+                    <td>${expense.project}</td>
+                    <td><span class="category-badge ${expense.category}">${getCategoryName(expense.category)}</span></td>
+                    <td>R$ ${expense.amount.toFixed(2)}</td>
+                    <td>
+                        <button class="btn-icon" onclick="editExpense(${expense.id})">
+                            <i class="ri-edit-line"></i>
+                        </button>
+                        <button class="btn-icon" onclick="deleteExpense(${expense.id})">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Função para obter nome da categoria
+        function getCategoryName(category) {
+            const categories = {
+                equipment: 'Equipamentos',
+                personnel: 'Pessoal',
+                location: 'Locação',
+                postproduction: 'Pós-produção'
+            };
+            return categories[category] || category;
+        }
+
+        // Inicializar gráficos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gráfico de Categorias
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Equipamentos', 'Pessoal', 'Locação', 'Pós-produção'],
+                    datasets: [{
+                        data: [35000, 25000, 15000, 10000],
+                        backgroundColor: [
+                            'rgba(0, 245, 255, 0.8)',
+                            'rgba(177, 94, 255, 0.8)',
+                            'rgba(255, 214, 10, 0.8)',
+                            'rgba(0, 255, 178, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#F4F7FF' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Projetos
+            const projectCtx = document.getElementById('projectChart').getContext('2d');
+            new Chart(projectCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Documentário', 'Curta', 'Comercial'],
+                    datasets: [{
+                        label: 'Orçado',
+                        data: [60000, 45000, 45000],
+                        backgroundColor: 'rgba(0, 245, 255, 0.8)'
+                    }, {
+                        label: 'Realizado',
+                        data: [35000, 30000, 20000],
+                        backgroundColor: 'rgba(177, 94, 255, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: {
+                                callback: value => `R$ ${value/1000}K`,
+                                color: '#F4F7FF'
+                            }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#F4F7FF' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#F4F7FF' }
+                        }
+                    }
+                }
+            });
+
+            // Carregar despesas
+            loadExpenses();
+        });
+
+        // Funções para o modal
+        function openNewExpenseModal() {
+            document.getElementById('newExpenseModal').classList.add('show');
+        }
+
+        function closeNewExpenseModal() {
+            document.getElementById('newExpenseModal').classList.remove('show');
+        }
+
+        // Função para salvar nova despesa
+        document.getElementById('newExpenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Aqui você implementaria a lógica para salvar a nova despesa
+            closeNewExpenseModal();
+        });
+
+        // Funções para editar e excluir despesas
+        function editExpense(id) {
+            // Implementar edição da despesa
+            console.log('Editando despesa:', id);
+        }
+
+        function deleteExpense(id) {
+            // Implementar exclusão da despesa
+            console.log('Excluindo despesa:', id);
+        }
+
+        // Função para exportar orçamento
+        function exportBudget() {
+            // Implementar exportação do orçamento
+            console.log('Exportando orçamento...');
+        }
+    </script>
+</body>
+</html>
