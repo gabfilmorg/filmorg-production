@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Roteiros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Roteiros</h1>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="createNewScript()">
+                    <i class="ri-add-line"></i>
+                    Novo Roteiro
+                </button>
+            </div>
+        </div>
+
+        <div class="scripts-grid">
+            <!-- Os cards de roteiro serão inseridos aqui via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados de roteiros
+        const scripts = [
+            {
+                id: 1,
+                title: 'Vida na Cidade - Episódio 1',
+                project: 'Documentário - Vida na Cidade',
+                status: 'Em Revisão',
+                lastModified: '2024-03-12',
+                scenes: 15
+            },
+            {
+                id: 2,
+                title: 'O Encontro - Versão Final',
+                project: 'Curta - O Encontro',
+                status: 'Aprovado',
+                lastModified: '2024-03-10',
+                scenes: 8
+            }
+        ];
+
+        // Função para carregar os roteiros
+        function loadScripts() {
+            const scriptsGrid = document.querySelector('.scripts-grid');
+            scriptsGrid.innerHTML = '';
+
+            scripts.forEach(script => {
+                const card = document.createElement('div');
+                card.className = 'script-card';
+                card.innerHTML = `
+                    <div class="script-header">
+                        <h3 class="script-title">${script.title}</h3>
+                        <span class="script-status status-${script.status.toLowerCase()}">${script.status}</span>
+                    </div>
+                    <div class="script-info">
+                        <div class="info-item">
+                            <i class="ri-movie-line"></i>
+                            <span>${script.project}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="ri-time-line"></i>
+                            <span>Última modificação: ${script.lastModified}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="ri-file-list-line"></i>
+                            <span>${script.scenes} cenas</span>
+                        </div>
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn btn-outline" onclick="viewScript(${script.id})">
+                            <i class="ri-eye-line"></i>
+                            Ver
+                        </button>
+                        <button class="btn btn-primary" onclick="editScript(${script.id})">
+                            <i class="ri-edit-line"></i>
+                            Editar
+                        </button>
+                    </div>
+                `;
+                scriptsGrid.appendChild(card);
+            });
+        }
+
+        // Funções para manipulação de roteiros
+        function createNewScript() {
+            // Implementar criação de novo roteiro
+            console.log('Criando novo roteiro');
+        }
+
+        function viewScript(id) {
+            // Implementar visualização do roteiro
+            console.log('Visualizando roteiro:', id);
+        }
+
+        function editScript(id) {
+            // Implementar edição do roteiro
+            console.log('Editando roteiro:', id);
+        }
+
+        // Carregar roteiros quando a página carregar
+        document.addEventListener('DOMContentLoaded', loadScripts);
+    </script>
+</body>
+</html>

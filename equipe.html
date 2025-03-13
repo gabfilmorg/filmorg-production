@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Equipe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Equipe</h1>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openNewMemberModal()">
+                    <i class="ri-user-add-line"></i>
+                    Novo Membro
+                </button>
+            </div>
+        </div>
+
+        <div class="team-grid">
+            <!-- Os cards de membros serão inseridos aqui via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal para Novo Membro -->
+    <div class="modal" id="newMemberModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Membro</h2>
+                <button class="modal-close" onclick="closeNewMemberModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newMemberForm">
+                    <div class="form-group">
+                        <label for="memberName">Nome</label>
+                        <input type="text" id="memberName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberRole">Função</label>
+                        <select id="memberRole" required>
+                            <option value="">Selecione uma função</option>
+                            <option value="director">Diretor(a)</option>
+                            <option value="producer">Produtor(a)</option>
+                            <option value="cinematographer">Diretor(a) de Fotografia</option>
+                            <option value="editor">Editor(a)</option>
+                            <option value="sound">Técnico(a) de Som</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberEmail">Email</label>
+                        <input type="email" id="memberEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberPhone">Telefone</label>
+                        <input type="tel" id="memberPhone" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeNewMemberModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Adicionar Membro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados de membros da equipe
+        const teamMembers = [
+            {
+                id: 1,
+                name: 'Ana Silva',
+                role: 'Diretora',
+                email: 'ana.silva@email.com',
+                phone: '(11) 98765-4321',
+                status: 'available',
+                projects: ['Documentário - Vida na Cidade', 'Curta - O Encontro']
+            },
+            {
+                id: 2,
+                name: 'João Santos',
+                role: 'Diretor de Fotografia',
+                email: 'joao.santos@email.com',
+                phone: '(11) 98765-4322',
+                status: 'busy',
+                projects: ['Comercial - Tech Solutions']
+            },
+            {
+                id: 3,
+                name: 'Maria Costa',
+                role: 'Produtora',
+                email: 'maria.costa@email.com',
+                phone: '(11) 98765-4323',
+                status: 'available',
+                projects: ['Documentário - Vida na Cidade']
+            }
+        ];
+
+        // Função para carregar os membros da equipe
+        function loadTeamMembers() {
+            const teamGrid = document.querySelector('.team-grid');
+            teamGrid.innerHTML = '';
+
+            teamMembers.forEach(member => {
+                const card = document.createElement('div');
+                card.className = 'team-member-card';
+                card.innerHTML = `
+                    <div class="member-header">
+                        <div class="member-avatar">${member.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div class="member-status status-${member.status}"></div>
+                    </div>
+                    <div class="member-info">
+                        <h3 class="member-name">${member.name}</h3>
+                        <p class="member-role">${member.role}</p>
+                    </div>
+                    <div class="member-contact">
+                        <div class="contact-item">
+                            <i class="ri-mail-line"></i>
+                            <span>${member.email}</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-phone-line"></i>
+                            <span>${member.phone}</span>
+                        </div>
+                    </div>
+                    <div class="member-projects">
+                        <h4>Projetos Atuais</h4>
+                        <div class="project-tags">
+                            ${member.projects.map(project => `<span class="project-tag">${project}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="member-actions">
+                        <button class="btn btn-outline" onclick="viewMember(${member.id})">
+                            <i class="ri-eye-line"></i>
+                            Ver Detalhes
+                        </button>
+                        <button class="btn btn-primary" onclick="editMember(${member.id})">
+                            <i class="ri-edit-line"></i>
+                            Editar
+                        </button>
+                    </div>
+                `;
+                teamGrid.appendChild(card);
+            });
+        }
+
+        // Funções para o modal
+        function openNewMemberModal() {
+            document.getElementById('newMemberModal').classList.add('show');
+        }
+
+        function closeNewMemberModal() {
+            document.getElementById('newMemberModal').classList.remove('show');
+        }
+
+        // Função para salvar novo membro
+        document.getElementById('newMemberForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Aqui você implementaria a lógica para salvar o novo membro
+            closeNewMemberModal();
+        });
+
+        // Funções para visualizar e editar membros
+        function viewMember(id) {
+            // Implementar visualização do membro
+            console.log('Visualizando membro:', id);
+        }
+
+        function editMember(id) {
+            // Implementar edição do membro
+            console.log('Editando membro:', id);
+        }
+
+        // Carregar membros quando a página carregar
+        document.addEventListener('DOMContentLoaded', loadTeamMembers);
+    </script>
+</body>
+</html>
