@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Projetos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Projetos</h1>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openNewProjectModal()">
+                    <i class="ri-add-line"></i>
+                    Novo Projeto
+                </button>
+            </div>
+        </div>
+
+        <div class="projects-grid">
+            <!-- Os cards de projeto serão inseridos aqui via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal para Novo Projeto -->
+    <div class="modal" id="newProjectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Projeto</h2>
+                <button class="modal-close" onclick="closeNewProjectModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newProjectForm">
+                    <div class="form-group">
+                        <label for="projectTitle">Título do Projeto</label>
+                        <input type="text" id="projectTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescription">Descrição</label>
+                        <textarea id="projectDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectType">Tipo</label>
+                        <select id="projectType" required>
+                            <option value="">Selecione um tipo</option>
+                            <option value="documentary">Documentário</option>
+                            <option value="shortfilm">Curta-metragem</option>
+                            <option value="commercial">Comercial</option>
+                            <option value="series">Série</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDeadline">Data Limite</label>
+                        <input type="date" id="projectDeadline" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeNewProjectModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Criar Projeto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados de projetos
+        const projects = [
+            {
+                id: 1,
+                title: 'Documentário - Vida na Cidade',
+                type: 'documentary',
+                status: 'Em Produção',
+                progress: 65,
+                description: 'Um olhar profundo sobre a vida urbana contemporânea.',
+                deadline: '2024-04-15',
+                team: ['Ana Silva', 'João Santos', 'Maria Costa'],
+                equipment: ['Sony FX6', 'Canon 24-70mm', 'Sennheiser MKH 416']
+            },
+            {
+                id: 2,
+                title: 'Curta - O Encontro',
+                type: 'shortfilm',
+                status: 'Pré-produção',
+                progress: 30,
+                description: 'Uma história sobre conexões inesperadas em uma cidade grande.',
+                deadline: '2024-05-01',
+                team: ['Pedro Oliveira', 'Carla Santos'],
+                equipment: ['RED Komodo', 'Zeiss Supreme Prime']
+            },
+            {
+                id: 3,
+                title: 'Comercial - Tech Solutions',
+                type: 'commercial',
+                status: 'Finalização',
+                progress: 90,
+                description: 'Campanha publicitária para empresa de tecnologia.',
+                deadline: '2024-03-25',
+                team: ['Lucas Mendes', 'Amanda Costa'],
+                equipment: ['ARRI Alexa Mini', 'Cooke S4']
+            }
+        ];
+
+        // Função para carregar os projetos
+        function loadProjects() {
+            const projectsGrid = document.querySelector('.projects-grid');
+            projectsGrid.innerHTML = '';
+
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.innerHTML = `
+                    <div class="project-header">
+                        <h3 class="project-title">${project.title}</h3>
+                        <span class="project-status status-${project.status.toLowerCase()}">${project.status}</span>
+                    </div>
+                    <p class="project-description">${project.description}</p>
+                    <div class="project-progress">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${project.progress}%"></div>
+                        </div>
+                        <span class="progress-text">${project.progress}%</span>
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <i class="ri-team-line"></i>
+                            <span>${project.team.length} membros</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="ri-camera-line"></i>
+                            <span>${project.equipment.length} equipamentos</span>
+                        </div>
+                    </div>
+                    <div class="project-actions">
+                        <button class="btn btn-outline" onclick="viewProject(${project.id})">
+                            <i class="ri-eye-line"></i>
+                            Ver Detalhes
+                        </button>
+                        <button class="btn btn-primary" onclick="editProject(${project.id})">
+                            <i class="ri-edit-line"></i>
+                            Editar
+                        </button>
+                    </div>
+                `;
+                projectsGrid.appendChild(card);
+            });
+        }
+
+        // Funções para o modal
+        function openNewProjectModal() {
+            document.getElementById('newProjectModal').classList.add('show');
+        }
+
+        function closeNewProjectModal() {
+            document.getElementById('newProjectModal').classList.remove('show');
+        }
+
+        // Função para salvar novo projeto
+        document.getElementById('newProjectForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Aqui você implementaria a lógica para salvar o novo projeto
+            closeNewProjectModal();
+        });
+
+        // Funções para visualizar e editar projetos
+        function viewProject(id) {
+            // Implementar visualização do projeto
+            console.log('Visualizando projeto:', id);
+        }
+
+        function editProject(id) {
+            // Implementar edição do projeto
+            console.log('Editando projeto:', id);
+        }
+
+        // Carregar projetos quando a página carregar
+        document.addEventListener('DOMContentLoaded', loadProjects);
+    </script>
+</body>
+</html>

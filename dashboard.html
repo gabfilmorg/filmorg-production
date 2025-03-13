@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            <div class="page-actions">
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="ri-movie-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Projetos Ativos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="ri-team-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">48</div>
+                        <div class="stat-label">Membros da Equipe</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="ri-calendar-check-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Eventos Hoje</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon yellow">
+                        <i class="ri-money-dollar-circle-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">R$ 125K</div>
+                        <div class="stat-label">Orçamento Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-overview dashboard-card">
+                <div class="dashboard-card-header">
+                    <h2 class="dashboard-card-title">Visão Geral dos Projetos</h2>
+                    <div class="dashboard-card-actions">
+                        <button class="dashboard-card-action">
+                            <i class="ri-filter-line"></i>
+                        </button>
+                        <button class="dashboard-card-action">
+                            <i class="ri-more-2-fill"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="dashboard-card-content">
+                    <table class="project-table">
+                        <thead>
+                            <tr>
+                                <th>Projeto</th>
+                                <th>Status</th>
+                                <th>Progresso</th>
+                                <th>Data Limite</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="upcoming-schedule dashboard-card">
+                <div class="dashboard-card-header">
+                    <h2 class="dashboard-card-title">Agenda</h2>
+                    <div class="dashboard-card-actions">
+                        <button class="dashboard-card-action">
+                            <i class="ri-add-line"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="upcoming-events">
+                        <div class="event-item">
+                            <div class="event-time">09:00</div>
+                            <div class="event-info">
+                                <div class="event-title">Reunião de Produção</div>
+                                <div class="event-project">Documentário - Vida na Cidade</div>
+                            </div>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-time">14:00</div>
+                            <div class="event-info">
+                                <div class="event-title">Gravação Externa</div>
+                                <div class="event-project">Curta - O Encontro</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="budget-overview dashboard-card">
+                <div class="dashboard-card-header">
+                    <h2 class="dashboard-card-title">Visão Geral do Orçamento</h2>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="chart-container">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-availability dashboard-card">
+                <div class="dashboard-card-header">
+                    <h2 class="dashboard-card-title">Disponibilidade da Equipe</h2>
+                </div>
+                <div class="dashboard-card-content">
+                    <div class="team-status-grid">
+                        <div class="team-member-status">
+                            <div class="member-avatar">AS</div>
+                            <div class="member-info">
+                                <div class="member-name">Ana Silva</div>
+                                <div class="member-role">Diretora</div>
+                            </div>
+                            <div class="status-indicator available"></div>
+                        </div>
+                        <div class="team-member-status">
+                            <div class="member-avatar">JS</div>
+                            <div class="member-info">
+                                <div class="member-name">João Santos</div>
+                                <div class="member-role">Cinegrafista</div>
+                            </div>
+                            <div class="status-indicator busy"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Utilizado', 'Disponível', 'Reservado'],
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: [
+                            'rgba(0, 245, 255, 0.8)',
+                            'rgba(177, 94, 255, 0.8)',
+                            'rgba(255, 214, 10, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#F4F7FF',
+                                font: {
+                                    family: 'Montserrat'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const projectsData = [
+                {
+                    name: 'Documentário - Vida na Cidade',
+                    status: 'Em Produção',
+                    progress: 65,
+                    deadline: '2024-04-15'
+                },
+                {
+                    name: 'Curta - O Encontro',
+                    status: 'Pré-produção',
+                    progress: 30,
+                    deadline: '2024-05-01'
+                },
+                {
+                    name: 'Comercial - Tech Solutions',
+                    status: 'Finalização',
+                    progress: 90,
+                    deadline: '2024-03-25'
+                }
+            ];
+
+            const projectTableBody = document.querySelector('.project-table tbody');
+            projectsData.forEach(project => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${project.name}</td>
+                    <td><span class="project-status status-${project.status.toLowerCase()}">${project.status}</span></td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${project.progress}%"></div>
+                        </div>
+                    </td>
+                    <td>${new Date(project.deadline).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn-xs">Ver Detalhes</button>
+                    </td>
+                `;
+                projectTableBody.appendChild(row);
+            });
+        });
+    </script>
+</body>
+</html>
