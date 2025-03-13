@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Analytics</h1>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="exportReport()">
+                    <i class="ri-download-line"></i>
+                    Exportar Relatório
+                </button>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="analytics-card">
+                <div class="analytics-card-header">
+                    <h2>Projetos por Status</h2>
+                </div>
+                <div class="analytics-card-content">
+                    <canvas id="projectStatusChart"></canvas>
+                </div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-card-header">
+                    <h2>Utilização de Equipamentos</h2>
+                </div>
+                <div class="analytics-card-content">
+                    <canvas id="equipmentUsageChart"></canvas>
+                </div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-card-header">
+                    <h2>Horas Trabalhadas por Equipe</h2>
+                </div>
+                <div class="analytics-card-content">
+                    <canvas id="teamHoursChart"></canvas>
+                </div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-card-header">
+                    <h2>Orçamento vs Realizado</h2>
+                </div>
+                <div class="analytics-card-content">
+                    <canvas id="budgetChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gráfico de Status dos Projetos
+            const projectStatusCtx = document.getElementById('projectStatusChart').getContext('2d');
+            new Chart(projectStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Em Produção', 'Pré-produção', 'Finalização', 'Concluído'],
+                    datasets: [{
+                        data: [4, 2, 3, 5],
+                        backgroundColor: [
+                            'rgba(0, 245, 255, 0.8)',
+                            'rgba(177, 94, 255, 0.8)',
+                            'rgba(255, 214, 10, 0.8)',
+                            'rgba(0, 255, 178, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#F4F7FF' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Utilização de Equipamentos
+            const equipmentUsageCtx = document.getElementById('equipmentUsageChart').getContext('2d');
+            new Chart(equipmentUsageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Câmeras', 'Lentes', 'Áudio', 'Iluminação', 'Grip'],
+                    datasets: [{
+                        label: 'Em Uso',
+                        data: [8, 12, 6, 15, 4],
+                        backgroundColor: 'rgba(0, 245, 255, 0.8)'
+                    }, {
+                        label: 'Disponível',
+                        data: [4, 6, 8, 5, 8],
+                        backgroundColor: 'rgba(177, 94, 255, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                        y: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#F4F7FF' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Horas Trabalhadas
+            const teamHoursCtx = document.getElementById('teamHoursChart').getContext('2d');
+            new Chart(teamHoursCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Produção',
+                        data: [160, 185, 175, 190, 200, 180],
+                        borderColor: 'rgba(0, 245, 255, 0.8)',
+                        tension: 0.4
+                    }, {
+                        label: 'Pós-produção',
+                        data: [140, 150, 160, 170, 155, 165],
+                        borderColor: 'rgba(177, 94, 255, 0.8)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#F4F7FF' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Orçamento
+            const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+            new Chart(budgetCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Orçado',
+                        data: [50000, 48000, 52000, 51000, 54000, 53000],
+                        borderColor: 'rgba(0, 245, 255, 0.8)',
+                        tension: 0.4
+                    }, {
+                        label: 'Realizado',
+                        data: [48000, 46000, 53000, 49000, 52000, 51000],
+                        borderColor: 'rgba(255, 214, 10, 0.8)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: {
+                                callback: value => `R$ ${value/1000}K`
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#F4F7FF' }
+                        }
+                    }
+                }
+            });
+        });
+
+        function exportReport() {
+            alert('O relatório será exportado em PDF.');
+            // Implementar lógica de exportação
+        }
+    </script>
+</body>
+</html>

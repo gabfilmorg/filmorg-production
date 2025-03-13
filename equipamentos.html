@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filmORG - Equipamentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
+    <script src="layout.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-header">
+            <div class="header-left">
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <h1 class="page-title">Equipamentos</h1>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openNewEquipmentModal()">
+                    <i class="ri-add-line"></i>
+                    Novo Equipamento
+                </button>
+            </div>
+        </div>
+
+        <div class="equipment-grid">
+            <!-- Os cards de equipamento serão inseridos aqui via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal para Novo Equipamento -->
+    <div class="modal" id="newEquipmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Equipamento</h2>
+                <button class="modal-close" onclick="closeNewEquipmentModal()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newEquipmentForm">
+                    <div class="form-group">
+                        <label for="equipmentName">Nome</label>
+                        <input type="text" id="equipmentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipmentType">Tipo</label>
+                        <select id="equipmentType" required>
+                            <option value="">Selecione um tipo</option>
+                            <option value="camera">Câmera</option>
+                            <option value="lens">Lente</option>
+                            <option value="audio">Equipamento de Áudio</option>
+                            <option value="lighting">Iluminação</option>
+                            <option value="grip">Grip</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipmentSerial">Número de Série</label>
+                        <input type="text" id="equipmentSerial" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipmentStatus">Status</label>
+                        <select id="equipmentStatus" required>
+                            <option value="available">Disponível</option>
+                            <option value="in-use">Em Uso</option>
+                            <option value="maintenance">Em Manutenção</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeNewEquipmentModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Adicionar Equipamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados de equipamentos
+        const equipment = [
+            {
+                id: 1,
+                name: 'Sony FX6',
+                type: 'camera',
+                serial: 'FX6001234',
+                status: 'in-use',
+                projects: ['Documentário - Vida na Cidade'],
+                nextMaintenance: '2024-04-15',
+                specifications: [
+                    'Sensor Full-Frame',
+                    '4K 120fps',
+                    'ISO Dual Base'
+                ]
+            },
+            {
+                id: 2,
+                name: 'Canon 24-70mm f/2.8',
+                type: 'lens',
+                serial: 'CN2470987',
+                status: 'available',
+                projects: [],
+                nextMaintenance: '2024-05-01',
+                specifications: [
+                    'Abertura f/2.8',
+                    'Zoom 24-70mm',
+                    'Estabilização IS'
+                ]
+            },
+            {
+                id: 3,
+                name: 'Sennheiser MKH 416',
+                type: 'audio',
+                serial: 'MKH416555',
+                status: 'maintenance',
+                projects: [],
+                nextMaintenance: '2024-03-20',
+                specifications: [
+                    'Microfone Direcional',
+                    'Phantom Power',
+                    'Resistência à Umidade'
+                ]
+            }
+        ];
+
+        // Função para carregar os equipamentos
+        function loadEquipment() {
+            const equipmentGrid = document.querySelector('.equipment-grid');
+            equipmentGrid.innerHTML = '';
+
+            equipment.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'equipment-card';
+                card.innerHTML = `
+                    <div class="equipment-header">
+                        <div class="equipment-type-icon">
+                            <i class="ri-${item.type === 'camera' ? 'camera' : item.type === 'lens' ? 'focus' : 'mic'}-line"></i>
+                        </div>
+                        <div class="equipment-status status-${item.status}">
+                            ${item.status === 'available' ? 'Disponível' : item.status === 'in-use' ? 'Em Uso' : 'Em Manutenção'}
+                        </div>
+                    </div>
+                    <div class="equipment-info">
+                        <h3 class="equipment-name">${item.name}</h3>
+                        <p class="equipment-serial">S/N: ${item.serial}</p>
+                    </div>
+                    <div class="equipment-specs">
+                        <h4>Especificações</h4>
+                        <ul>
+                            ${item.specifications.map(spec => `<li>${spec}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ${item.projects.length > 0 ? `
+                        <div class="equipment-projects">
+                            <h4>Projeto Atual</h4>
+                            <div class="project-tags">
+                                ${item.projects.map(project => `<span class="project-tag">${project}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    <div class="equipment-maintenance">
+                        <i class="ri-tools-line"></i>
+                        <span>Próxima Manutenção: ${item.nextMaintenance}</span>
+                    </div>
+                    <div class="equipment-actions">
+                        <button class="btn btn-outline" onclick="viewEquipment(${item.id})">
+                            <i class="ri-eye-line"></i>
+                            Ver Detalhes
+                        </button>
+                        <button class="btn btn-primary" onclick="editEquipment(${item.id})">
+                            <i class="ri-edit-line"></i>
+                            Editar
+                        </button>
+                    </div>
+                `;
+                equipmentGrid.appendChild(card);
+            });
+        }
+
+        // Funções para o modal
+        function openNewEquipmentModal() {
+            document.getElementById('newEquipmentModal').classList.add('show');
+        }
+
+        function closeNewEquipmentModal() {
+            document.getElementById('newEquipmentModal').classList.remove('show');
+        }
+
+        // Função para salvar novo equipamento
+        document.getElementById('newEquipmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Aqui você implementaria a lógica para salvar o novo equipamento
+            closeNewEquipmentModal();
+        });
+
+        // Funções para visualizar e editar equipamentos
+        function viewEquipment(id) {
+            // Implementar visualização do equipamento
+            console.log('Visualizando equipamento:', id);
+        }
+
+        function editEquipment(id) {
+            // Implementar edição do equipamento
+            console.log('Editando equipamento:', id);
+        }
+
+        // Carregar equipamentos quando a página carregar
+        document.addEventListener('DOMContentLoaded', loadEquipment);
+    </script>
+</body>
+</html>
